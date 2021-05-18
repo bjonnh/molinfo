@@ -4,6 +4,7 @@
 ### Added
 
 ### Changed
+- Easier local development (just rebuild and restart container)
 
 ### Deprecated
 

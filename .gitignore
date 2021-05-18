@@ -5,3 +5,4 @@
 /?/
 /cache/
 /.cache/
+/traefik/traefik.toml

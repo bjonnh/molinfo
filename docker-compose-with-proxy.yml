@@ -1,0 +1,13 @@
+version: "3.4"
+services:
+  traefik:
+    image: traefik:2.4
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+    - ./traefik:/etc/traefik
+    networks:
+      - internal
+      - external

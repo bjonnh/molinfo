@@ -1,8 +1,17 @@
-version: "3.2"
+version: "3.4"
 services:
   redis:
     image: "redis:latest"
+    networks:
+      - internal
   molinfo:
     build: .
     ports:
-      - "8042:8042"
+      - "127.0.0.1:8042:8042"
+    networks:
+      - internal
+    volumes:
+      - ./build/install/molinfo:/app:ro
+networks:
+  internal:
+  external:
