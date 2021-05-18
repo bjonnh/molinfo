@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!--suppress CheckTagEmptyBody -->
+<SmellBaseline>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>ClassNaming:main.kt$resources</ID>
+    </CurrentIssues>
+</SmellBaseline>
