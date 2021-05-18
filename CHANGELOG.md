@@ -12,16 +12,18 @@
 ### Fixed
 
 ### Security
-## [0.0.3]
+## [0.0.1]
 ### Added
-- Support for Changelog
+- Initial support for svg
+- Initial support for caching (REDIS)
+- Initial support for docker-compose
+
 ### Changed
-- Updated all versions
 
 ### Deprecated
 
 ### Removed
-- Support for bintray upload (will prepare for Sonatype instead)
+
 ### Fixed
 
 ### Security

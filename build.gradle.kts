@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    application
     // kotlin("plugin.serialization")
     id("com.github.ben-manes.versions")
     id("maven-publish")
@@ -32,7 +33,10 @@ dependencies {
     // val serializationRuntimeVersion: String by project
     val kotlinLoggingVersion: String by project
     val junitApiVersion: String by project
-    val slf4jVersion: String by project
+    val cdkVersion: String by project
+    val ktorVersion: String by project
+    val logbackVersion: String by project
+    val redissonVersion: String by project
 
     implementation(kotlin("stdlib"))
     // implementation(kotlin("reflect"))
@@ -42,7 +46,25 @@ dependencies {
         exclude("org.slf4j")
     }
 
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$slf4jVersion")
+    implementation("org.openscience.cdk:cdk-bundle:$cdkVersion") {
+        exclude("joda-time")
+    }
+
+    // ktor
+
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-locations:$ktorVersion")
+    implementation("io.ktor:ktor-metrics:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+
+    // caching
+
+    implementation("org.redisson:redisson:$redissonVersion")
+
+    // tests
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitApiVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitApiVersion")
@@ -133,4 +155,10 @@ detekt {
 changelog {
     version = projectVersion
     groups = listOf("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security")
+}
+
+sourceSets["main"].resources.srcDirs("resources")
+
+application {
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }

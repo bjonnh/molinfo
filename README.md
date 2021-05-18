@@ -1,17 +1,25 @@
-# skotliton
+# molinfo
 
-This is a simple sketelon for my Kotlin projects that have:
-- **Code quality tools**: Ktlint, Detekt, Ben Mane's version plugin
-- **Documentation**: Dokka
-- **Uberjar**: Shadow
-- **Publishing**: Bintray/jfrog
-- **Testing**: Junit5
-- **Serialization**: KotlinX serialization (commented by default)
-- **Git Hook**: pre-push: run a gradle check before pushing to *main* branch
+A tiny service providing information about molecules.
 
-Considerations for later:
-- **Building**: Batect
+It is fast, and provides client side and server side caching, it also compresses with gzip, providing blazing fast responses.
 
-## Git Hooks
+## How to use
 
-The Git Hook is not installed by itself, you will have to copy *qc/hooks/pre-push* to *.git/hooks/pre-push*
+Currently there is no full-in-docker build (this is coming)
+
+You need a JVM (Ideally >15) and Docker installed then:
+
+```shell
+./gradlew installDist
+docker-compose up
+```
+
+You now have a service on the port 8042 that can answer to queries like:
+
+http://127.0.0.1:8042/molecule/smiles/CCC(C)N1C(=O)N(C=N1)C2=CC=C(C=C2)N3CCN(CC3)C4=CC=C(C=C4)OCC5COC(O5)(CN6C=NC=N6)C7=C(C=C(C=C7)Cl)Cl.svg
+
+## What's next
+
+- molecular properties
+- …

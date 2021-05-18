@@ -1,0 +1,8 @@
+version: "3.2"
+services:
+  redis:
+    image: "redis:latest"
+  molinfo:
+    build: .
+    ports:
+      - "8042:8042"
