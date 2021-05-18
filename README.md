@@ -19,6 +19,11 @@ You now have a service on the port 8042 that can answer to queries like:
 
 http://127.0.0.1:8042/molecule/smiles/CCC(C)N1C(=O)N(C=N1)C2=CC=C(C=C2)N3CCN(CC3)C4=CC=C(C=C4)OCC5COC(O5)(CN6C=NC=N6)C7=C(C=C(C=C7)Cl)Cl.svg
 
+## Currently supported endpoints
+
+- /molecule/smiles/{smiles}.svg
+- /molecule/smiles/{smiles}/inchikey
+
 ## What's next
 
 - molecular properties

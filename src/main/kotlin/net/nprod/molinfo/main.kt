@@ -17,7 +17,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.date.*
 import net.nprod.molinfo.cache.CacheManager
-import net.nprod.molinfo.chemistry.Molecule
+import net.nprod.molinfo.chemistry.MoleculeManager
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -37,7 +37,9 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     val cacheManager = CacheManager()
+    val moleculeManager = MoleculeManager()
     val svgMap = cacheManager.mapStringToString("smiles2svg")
+    val smiles2inchikeyMap = cacheManager.mapStringToString("smiles2inchikey")
 
     install(Locations) {
     }
@@ -74,9 +76,24 @@ fun Application.module(testing: Boolean = false) {
         get("/molecule/smiles/{smiles}.svg") {
             call.parameters["smiles"]?.let { smiles ->
                 val svg = svgMap.getOrElse(smiles) {
-                    Molecule.fromSmiles(smiles).svg()
+                    moleculeManager.moleculeFromSmiles(smiles).svg()
                 }
-                call.respondText(svg, contentType = ContentType.Image.SVG)
+                if (svg != null)
+                    call.respondText(svg, contentType = ContentType.Image.SVG)
+                else
+                    call.response.status(HttpStatusCode.BadRequest)
+            } ?: call.response.status(HttpStatusCode.BadRequest)
+        }
+
+        get("/molecule/smiles/{smiles}/inchikey") {
+            call.parameters["smiles"]?.let { smiles ->
+                val inchikey = smiles2inchikeyMap.getOrElse(smiles) {
+                    moleculeManager.moleculeFromSmiles(smiles).inchikey()
+                }
+                if (inchikey != null)
+                    call.respondText(inchikey, contentType = ContentType.Text.Plain)
+                else
+                    call.response.status(HttpStatusCode.BadRequest)
             } ?: call.response.status(HttpStatusCode.BadRequest)
         }
     }

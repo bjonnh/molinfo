@@ -8,26 +8,21 @@
 
 package net.nprod.molinfo.chemistry
 
-import org.openscience.cdk.depict.DepictionGenerator
 import org.openscience.cdk.interfaces.IAtomContainer
-import org.openscience.cdk.silent.SilentChemObjectBuilder
-import org.openscience.cdk.smiles.SmilesParser
 import java.awt.image.BufferedImage
 
 /**
  * A Molecule container that wraps CDK
  */
-class Molecule {
+class Molecule(private val manager: MoleculeManager) {
     internal var atomContainer: IAtomContainer? = null
-
-    private fun depictionGenerator() = DepictionGenerator().withFillToFit().withAtomColors()
 
     /**
      * Get an svg depiction of the molecule
      *
-     * @return SVG as a string
+     * @return SVG as a string or null if atomContainer is not defined
      */
-    fun svg(): String = depictionGenerator().depict(atomContainer).toSvgStr()
+    fun svg(): String? = atomContainer?.let { manager.depictionGenerator.depict(it).toSvgStr() }
 
     /**
      * Get a png depiction of the molecule
@@ -36,18 +31,10 @@ class Molecule {
      * @param height Height of image
      * @return PNG as a BufferedImage
      */
-    fun png(width: Double = 300.0, height: Double = 300.0): BufferedImage =
-        depictionGenerator().withSize(width, height).depict(atomContainer).toImg()
+    fun png(width: Double = 300.0, height: Double = 300.0): BufferedImage? =
+        atomContainer?.let {
+            manager.depictionGenerator.withSize(width, height).depict(it).toImg()
+        }
 
-    companion object {
-        /**
-         * Generate a Molecule from a SMILES string
-         *
-         * @param smiles: The SMILES string
-         */
-        fun fromSmiles(smiles: String): Molecule =
-            Molecule().apply {
-                atomContainer = SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(smiles)
-            }
-    }
+    fun inchikey(): String? = atomContainer?.let { manager.inchiKey(it) }
 }

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Support for InChIKeys
 
 ### Changed
 - Easier local development (just rebuild and restart container)
