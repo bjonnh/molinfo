@@ -19,7 +19,10 @@ class CacheManager {
 
     init {
         config.useSingleServer().address = "redis://redis:6379"
+        config.threads = 2
+        
         instance = Redisson.create(config)
+
     }
 
     fun mapStringToString(name: String): RMap<String, String> = instance.getMap(name)

@@ -23,8 +23,10 @@ http://127.0.0.1:8042/molecule/smiles/CCC(C)N1C(=O)N(C=N1)C2=CC=C(C=C2)N3CCN(CC3
 
 - /molecule/smiles/{smiles}.svg
 - /molecule/smiles/{smiles}/inchikey
+- /molecule/smiles/{smiles}/exactmass
+- /molecule/smiles/{smiles}/averagemass
 
 ## What's next
 
-- molecular properties
+- more molecular properties
 - …

@@ -12,7 +12,6 @@ import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.date.*
@@ -38,11 +37,6 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
     val cacheManager = CacheManager()
     val moleculeManager = MoleculeManager()
-    val svgMap = cacheManager.mapStringToString("smiles2svg")
-    val smiles2inchikeyMap = cacheManager.mapStringToString("smiles2inchikey")
-
-    install(Locations) {
-    }
 
     install(Compression) {
         gzip {
@@ -75,25 +69,37 @@ fun Application.module(testing: Boolean = false) {
     routing {
         get("/molecule/smiles/{smiles}.svg") {
             call.parameters["smiles"]?.let { smiles ->
-                val svg = svgMap.getOrElse(smiles) {
+                val svg = cacheManager.mapStringToString("smiles2svg").getOrPut(smiles) {
                     moleculeManager.moleculeFromSmiles(smiles).svg()
                 }
-                if (svg != null)
-                    call.respondText(svg, contentType = ContentType.Image.SVG)
-                else
-                    call.response.status(HttpStatusCode.BadRequest)
+                call.respondText(svg, contentType = ContentType.Image.SVG)
             } ?: call.response.status(HttpStatusCode.BadRequest)
         }
 
         get("/molecule/smiles/{smiles}/inchikey") {
             call.parameters["smiles"]?.let { smiles ->
-                val inchikey = smiles2inchikeyMap.getOrElse(smiles) {
-                    moleculeManager.moleculeFromSmiles(smiles).inchikey()
+                val inchikey = cacheManager.mapStringToString("smiles2inchikey").getOrPut(smiles) {
+                    moleculeManager.moleculeFromSmiles(smiles).inchikey
                 }
-                if (inchikey != null)
-                    call.respondText(inchikey, contentType = ContentType.Text.Plain)
-                else
-                    call.response.status(HttpStatusCode.BadRequest)
+                call.respondText(inchikey, contentType = ContentType.Text.Plain)
+            } ?: call.response.status(HttpStatusCode.BadRequest)
+        }
+
+        get("/molecule/smiles/{smiles}/exactmass") {
+            call.parameters["smiles"]?.let { smiles ->
+                val mass = cacheManager.mapStringToString("smiles2exactmass").getOrPut(smiles) {
+                    moleculeManager.moleculeFromSmiles(smiles).exactmass.toString()
+                }
+                call.respondText(mass, contentType = ContentType.Text.Plain)
+            } ?: call.response.status(HttpStatusCode.BadRequest)
+        }
+
+        get("/molecule/smiles/{smiles}/averagemass") {
+            call.parameters["smiles"]?.let { smiles ->
+                val mass = cacheManager.mapStringToString("smiles2averagemass").getOrPut(smiles) {
+                    moleculeManager.moleculeFromSmiles(smiles).averagemass.toString()
+                }
+                call.respondText(mass, contentType = ContentType.Text.Plain)
             } ?: call.response.status(HttpStatusCode.BadRequest)
         }
     }

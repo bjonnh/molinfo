@@ -14,15 +14,13 @@ import java.awt.image.BufferedImage
 /**
  * A Molecule container that wraps CDK
  */
-class Molecule(private val manager: MoleculeManager) {
-    internal var atomContainer: IAtomContainer? = null
-
+class Molecule(private val manager: MoleculeManager, private val atomContainer: IAtomContainer) {
     /**
      * Get an svg depiction of the molecule
      *
      * @return SVG as a string or null if atomContainer is not defined
      */
-    fun svg(): String? = atomContainer?.let { manager.depictionGenerator.depict(it).toSvgStr() }
+    fun svg(): String = manager.depictionGenerator().depict(atomContainer).toSvgStr()
 
     /**
      * Get a png depiction of the molecule
@@ -31,10 +29,16 @@ class Molecule(private val manager: MoleculeManager) {
      * @param height Height of image
      * @return PNG as a BufferedImage
      */
-    fun png(width: Double = 300.0, height: Double = 300.0): BufferedImage? =
-        atomContainer?.let {
-            manager.depictionGenerator.withSize(width, height).depict(it).toImg()
-        }
+    fun png(width: Double = 300.0, height: Double = 300.0): BufferedImage =
+        manager.depictionGenerator().withSize(width, height).depict(atomContainer).toImg()
 
-    fun inchikey(): String? = atomContainer?.let { manager.inchiKey(it) }
+
+    val inchikey
+        get(): String = manager.inchiKey(atomContainer)
+
+    val exactmass
+        get(): Double = manager.exactmass(atomContainer)
+
+    val averagemass
+        get(): Double = manager.averagemass(atomContainer)
 }
