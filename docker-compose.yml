@@ -7,7 +7,9 @@ services:
   molinfo:
     build: .
     ports:
-      - "127.0.0.1:8042:8042"
+      - "8042:8042"
+    environment:
+      - MOLINFO_REDIS_HOST=redis
     networks:
       - internal
     volumes:

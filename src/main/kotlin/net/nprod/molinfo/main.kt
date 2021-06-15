@@ -20,10 +20,6 @@ import net.nprod.molinfo.chemistry.MoleculeManager
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-const val GZIP_PRIORITY: Double = 1.0
-const val DEFLATE_PRIORITY: Double = 10.0
-const val DEFLATE_MIN_SIZE: Long = 1024
-
 /**
  * How long do we ask the clients to cache for
  */
@@ -37,16 +33,6 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
     val cacheManager = CacheManager()
     val moleculeManager = MoleculeManager()
-
-    install(Compression) {
-        gzip {
-            priority = GZIP_PRIORITY
-        }
-        deflate {
-            priority = DEFLATE_PRIORITY
-            minimumSize(DEFLATE_MIN_SIZE)
-        }
-    }
 
     install(CORS) {
         method(HttpMethod.Options)
@@ -66,10 +52,19 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    val smilesCache = cacheManager.mapStringToString("smiles2svg")
+    val smiles2inchiCache = cacheManager.mapStringToString("smiles2inchikey")
+    val smiles2exactCache = cacheManager.mapStringToString("smiles2exactmass")
+    val smiles2averageCache = cacheManager.mapStringToString("smiles2averagemass")
+
     routing {
+        get("/ping") {
+            call.respondText("pong", contentType = ContentType.Text.Plain)
+        }
+
         get("/molecule/smiles/{smiles}.svg") {
             call.parameters["smiles"]?.let { smiles ->
-                val svg = cacheManager.mapStringToString("smiles2svg").getOrPut(smiles) {
+                val svg = smilesCache.getOrPut(smiles) {
                     moleculeManager.moleculeFromSmiles(smiles).svg()
                 }
                 call.respondText(svg, contentType = ContentType.Image.SVG)
@@ -78,7 +73,7 @@ fun Application.module(testing: Boolean = false) {
 
         get("/molecule/smiles/{smiles}/inchikey") {
             call.parameters["smiles"]?.let { smiles ->
-                val inchikey = cacheManager.mapStringToString("smiles2inchikey").getOrPut(smiles) {
+                val inchikey = smiles2inchiCache.getOrPut(smiles) {
                     moleculeManager.moleculeFromSmiles(smiles).inchikey
                 }
                 call.respondText(inchikey, contentType = ContentType.Text.Plain)
@@ -87,7 +82,7 @@ fun Application.module(testing: Boolean = false) {
 
         get("/molecule/smiles/{smiles}/exactmass") {
             call.parameters["smiles"]?.let { smiles ->
-                val mass = cacheManager.mapStringToString("smiles2exactmass").getOrPut(smiles) {
+                val mass = smiles2exactCache.getOrPut(smiles) {
                     moleculeManager.moleculeFromSmiles(smiles).exactmass.toString()
                 }
                 call.respondText(mass, contentType = ContentType.Text.Plain)
@@ -96,7 +91,7 @@ fun Application.module(testing: Boolean = false) {
 
         get("/molecule/smiles/{smiles}/averagemass") {
             call.parameters["smiles"]?.let { smiles ->
-                val mass = cacheManager.mapStringToString("smiles2averagemass").getOrPut(smiles) {
+                val mass = smiles2averageCache.getOrPut(smiles) {
                     moleculeManager.moleculeFromSmiles(smiles).averagemass.toString()
                 }
                 call.respondText(mass, contentType = ContentType.Text.Plain)
