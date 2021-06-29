@@ -12,7 +12,7 @@ services:
       - MOLINFO_REDIS_HOST=redis
     networks:
       - molinfo_internal
-      - internal
+      - proxy_internal
     volumes:
       - ./build/install/molinfo:/app:ro
 networks:
