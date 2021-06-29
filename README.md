@@ -6,12 +6,9 @@ It is fast, and provides client side and server side caching, it also compresses
 
 ## How to use
 
-Currently there is no full-in-docker build (this is coming)
-
-You need a JVM (Ideally >15) and Docker installed then:
+You need Docker (and docker-compose) installed then:
 
 ```shell
-./gradlew installDist
 docker-compose up
 ```
 

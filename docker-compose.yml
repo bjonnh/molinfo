@@ -3,7 +3,7 @@ services:
   redis:
     image: "redis:latest"
     networks:
-      - internal
+      - molinfo_internal
   molinfo:
     build: .
     ports:
@@ -11,9 +11,10 @@ services:
     environment:
       - MOLINFO_REDIS_HOST=redis
     networks:
+      - molinfo_internal
       - internal
     volumes:
       - ./build/install/molinfo:/app:ro
 networks:
+  molinfo_internal:
   internal:
-  external:
